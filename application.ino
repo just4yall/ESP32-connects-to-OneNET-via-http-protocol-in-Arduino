@@ -18,14 +18,14 @@ Ticker ticker1;
 HTTPClient http;
 
 // Access to WIFI
-const char *ssid = "OCEAN";
-const char *password = "123456789";
+const char *ssid = "xxxxx";
+const char *password = "xxxxxx";
 
 //Replace with your deviceid
-String DeviceId = "876455718"; 
+String DeviceId = "xxxxxx"; 
 
 //Replace with your API-key
-String Api_Key = "w24XDwnqukFiV0YUXdpIEpJLqZY=";
+String Api_Key = "xxxxxxxxxxxxxxxxxxxxxxx=";
 String Url_Post="http://api.heclouds.com/devices/"+DeviceId+"/datapoints";
 
 //url for positioning
