@@ -11,6 +11,6 @@ And you will need header files:
 #include <Wire.h>  
 #include <HTTPClient.h>  
 #include <ArduinoJson.h>  
-#include "WiFi.h" 
+#include "WiFi.h"   
 #include "Ticker.h"  
 **And don’t forget to replace with your SSID, password, DviceId and API-Key**
