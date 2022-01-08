@@ -1,4 +1,4 @@
-# ESP32-connects-to-OneNET-via-http-protocol in Arduino
+# ESP32 connects to OneNET via http protocol in Arduino
 **Complete driving 0.96 oled screen, WIFI positioning, state machine, peripheral control, data upload and other functions**    
 You may need installsupport package of the **ESP32 Arduino** development board, choose the **NodeMCU-32S**
 
