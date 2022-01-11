@@ -18,20 +18,21 @@ Ticker ticker1;
 HTTPClient http;
 
 // Access to WIFI
-const char *ssid = "xxxxx";
-const char *password = "xxxxxx";
+const char *ssid = "OCEAN";
+const char *password = "123456789";
 
 //Replace with your deviceid
-String DeviceId = "xxxxxx"; 
+String DeviceId = "879099838"; 
 
 //Replace with your API-key
-String Api_Key = "xxxxxxxxxxxxxxxxxxxxxxx=";
+String Api_Key = "dcURB1GOmN4MZ0jk3=pzyuaZ5WA=";
 String Url_Post="http://api.heclouds.com/devices/"+DeviceId+"/datapoints";
 
 //url for positioning
 String Url_Post_Mac="http://api.heclouds.com/devices/"+DeviceId+"/datapoints?type=3";
 String Url_Get_Location="http://api.heclouds.com/devices/"+DeviceId+"/lbs/latestWifiLocation";
 
+String Url_Get_datapoints="http://api.heclouds.com/devices/"+DeviceId+"/datastreams/knob";
 
 //Global variables
 char AnalogC[25];
@@ -98,10 +99,17 @@ void scanWiFi()
     }
 }
 
-//Get the calculated latitude and longitude of the address through the API
-void getLocation()
+//Get the value of datapoints or calculated latitude and longitude of the address through the API 
+void getInformation(String choice)
 {
-  http.begin(Url_Get_Location);
+  if(choice == "location")
+  {
+    http.begin(Url_Get_Location);
+  }
+  else if(choice =="knob")
+  {
+    http.begin(Url_Get_datapoints);
+  }
   http.addHeader("api-key",Api_Key);
   int httpcode = http.sendRequest("GET");
   Serial.println(httpcode);
@@ -109,7 +117,7 @@ void getLocation()
   if(httpcode > 0)
   {
     json = http.getString();
-   // Serial.println(json);
+    //Serial.println(json);
   }
   else 
   {
@@ -128,8 +136,45 @@ void getLocation()
     return;
   }
   //Stored in the array
-  value_lbs[0]= revDoc["data"]["lon"];
-  value_lbs[1]= revDoc["data"]["lat"]; 
+  if(choice == "location")
+  {
+    value_lbs[0]= revDoc["data"]["lon"];
+    value_lbs[1]= revDoc["data"]["lat"]; 
+  }
+  else if(choice =="knob")
+  {
+    int temp = revDoc["data"]["current_value"];
+    Serial.println(temp);
+      switch(temp)
+      {
+//        case 0:
+//          //control all
+//          DeviceControl("ALL");
+//          Serial.println("control all");
+//          break;
+        case 1:
+          //touch once
+          DeviceControl("BLUE");
+          Serial.println("touch once");
+         break;
+        case 2:
+          //touch twice
+          DeviceControl("RED");
+          Serial.println("touch twice");
+          break;
+        case 3:
+          //touch third
+          DeviceControl("YELLOW");
+          Serial.println("touch third");
+          break;
+        case 4:
+          //control all
+          DeviceControl("ALL");
+          Serial.println("control all");
+          break;
+       }
+  }
+  
   
 }
 
@@ -154,6 +199,20 @@ void setupWifi()
 void refresh(char* analog,boolean TTL_H,boolean TTL_L)
 {
   u8g2.clearBuffer();//
+  u8g2.setFont(u8g2_font_open_iconic_all_1x_t);
+  if(value_bool[2]==true)
+  {
+    u8g2.drawGlyph(95, 16, 0x0056);
+  }
+  if(value_bool[3]==true)
+  {
+    u8g2.drawGlyph(105, 16, 0x0047);
+  }
+  if(value_bool[4]==true)
+  {
+    u8g2.drawGlyph(115, 16, 0x00E1);
+  }
+
   u8g2.setFont(u8g2_font_chargen_92_me);
   u8g2.drawLine(0,21,127,21);
   if(TTL_H == true || PressFlag == 2)
@@ -425,9 +484,10 @@ void callback()
    {
     
     ledControl(true); 
+    getInformation("knob");
     sendData("bool");
     sendData("double");
-    getLocation();
+    getInformation("location");
     sendData("sendlbs");
     ledControl(false);
     maxAnalog = 0;
