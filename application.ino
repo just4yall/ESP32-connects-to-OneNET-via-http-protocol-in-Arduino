@@ -18,21 +18,21 @@ Ticker ticker1;
 HTTPClient http;
 
 // Access to WIFI
-const char *ssid = "replace with your ssid";
-const char *password = "replace with your password";
+const char *ssid = "OCEAN";
+const char *password = "123456789";
 
 //Replace with your deviceid
-String DeviceId = "xxxxxxx"; 
+String DeviceId = "879099838"; 
 
 //Replace with your API-key
-String Api_Key = "xxxxxxxxx=";
+String Api_Key = "dcURB1GOmN4MZ0jk3=pzyuaZ5WA=";
 String Url_Post="http://api.heclouds.com/devices/"+DeviceId+"/datapoints";
 
 //url for positioning
 String Url_Post_Mac="http://api.heclouds.com/devices/"+DeviceId+"/datapoints?type=3";
 String Url_Get_Location="http://api.heclouds.com/devices/"+DeviceId+"/lbs/latestWifiLocation";
 
-String Url_Get_datapoints="http://api.heclouds.com/devices/"+DeviceId+"/datastreams/knob";
+String Url_Get_datapoints="http://api.heclouds.com/devices/"+DeviceId+"/datastreams/";
 
 //Global variables
 char AnalogC[25];
@@ -53,6 +53,7 @@ bool Mode_Continue_Flag = true;
 int StateFlag = 0;
 bool DeviceStatus = false;
 bool SetUpOkFlag = false;
+
 
 //Different types of arrays for uploading
 String  id_bool[5]={"TTL_L","TTL_H","Lights","Fans","Speakers"};
@@ -106,9 +107,11 @@ void getInformation(String choice)
   {
     http.begin(Url_Get_Location);
   }
-  else if(choice =="knob")
+  else
   {
-    http.begin(Url_Get_datapoints);
+    String Url = Url_Get_datapoints;
+    Url += choice;
+    http.begin(Url);
   }
   http.addHeader("api-key",Api_Key);
   int httpcode = http.sendRequest("GET");
@@ -141,41 +144,18 @@ void getInformation(String choice)
     value_lbs[0]= revDoc["data"]["lon"];
     value_lbs[1]= revDoc["data"]["lat"]; 
   }
-  else if(choice =="knob")
+  if(choice =="dev1")
   {
-    int temp = revDoc["data"]["current_value"];
-    Serial.println(temp);
-      switch(temp)
-      {
-//        case 0:
-//          //control all
-//          DeviceControl("ALL");
-//          Serial.println("control all");
-//          break;
-        case 1:
-          //touch once
-          DeviceControl("BLUE");
-          Serial.println("touch once");
-         break;
-        case 2:
-          //touch twice
-          DeviceControl("RED");
-          Serial.println("touch twice");
-          break;
-        case 3:
-          //touch third
-          DeviceControl("YELLOW");
-          Serial.println("touch third");
-          break;
-        case 4:
-          //control all
-          DeviceControl("ALL");
-          Serial.println("control all");
-          break;
-       }
+    digitalWrite(BLUE,revDoc["data"]["current_value"]);
   }
-  
-  
+  else if(choice =="dev2")
+  {
+    digitalWrite(RED,revDoc["data"]["current_value"]);
+  }
+  else if(choice =="dev3")
+  {
+    digitalWrite(YELLOW,revDoc["data"]["current_value"]);
+  }
 }
 
 //Initialize WIFI and connect to hotspot
@@ -484,7 +464,9 @@ void callback()
    {
     
     ledControl(true); 
-    getInformation("knob");
+    getInformation("dev1");
+    getInformation("dev2");
+    getInformation("dev3");
     sendData("bool");
     sendData("double");
     getInformation("location");
